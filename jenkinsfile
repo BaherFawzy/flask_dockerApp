@@ -1,15 +1,18 @@
 pipeline {
     agent any
+
     stages {
         stage('build') {
             steps {
-                sh "docker build -t baher421/getting-started:${env.BUILD_NUMBER} ."
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
-    // some block
-                    sh "docker login -u $user -p $pass"
-                    sh "docker push baher421/getting-started:${env.BUILD_NUMBER}"
-}
+                script {
+                    sh "docker build -t baher421/getting-started:${env.BUILD_NUMBER} ."
 
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh """
+                            echo "$pass" | docker login -u "$user" --password-stdin
+                            docker push baher421/getting-started:${env.BUILD_NUMBER}
+                        """
+                    }
                 }
             }
         }
