@@ -1,29 +1,19 @@
 pipeline {
-    agent{
-        label 'master'
-    }
+    agent any
     stages {
-        
-        
-        stage('build docker image'){
-            steps{
-                sh "docker build -t baher421/getting-started:$BUILD_NUMBER ."
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                sh "docker login -u $user -p $pass"
-                sh "docker push baher421/getting-started:$BUILD_NUMBER"
-}
+        stage('build') {
+            steps {
+                sh "docker build -t baher421/getting-started:${env.BUILD_NUMBER} ."
+                withCredentials([usernamePassword(credentialsId: 'Dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    sh "docker login -u $user -p $pass"
+                    sh "docker push baher421/getting-started:${env.BUILD_NUMBER}"
+                }
             }
         }
-        
-        stage('test'){
-            steps{
-                echo "no test cases found"
-            }
-        }
-        
-        stage('deploy'){
-            steps{
-                sh "docker run -d -p 500$BUILD_NUMBER:8008 baher421/getting-started:$BUILD_NUMBER"
+
+        stage('deploy') {
+            steps {
+                sh "docker run -d -p 400${env.BUILD_NUMBER}:8080 baher421/getting-started:${env.BUILD_NUMBER}"
             }
         }
     }
