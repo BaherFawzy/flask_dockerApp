@@ -1,0 +1,20 @@
+pipeline{
+    agent any
+    stages{
+        stage('build'){
+            steps{
+                sh "docker build -t baher421/getting-started:${env.BUILD_NUMBER} . "
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                      // some block
+                sh "docker login -u $user -p $pass"
+                sh "docker push baher421/getting-started:${env.BUILD_NUMBER}"
+                }
+            }
+        }
+        stage('deploy'){
+            steps{
+                sh " docker run -d -p 500${env.BUILD_NUMBER}:8080  baher421/getting-started:${env.BUILD_NUMBER} "
+            }
+        }
+    }
+}
