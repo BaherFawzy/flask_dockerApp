@@ -3,11 +3,7 @@ pipeline {
         label 'master'
     }
     stages {
-        stage('pull src code') {
-            steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/BaherFawzy/flask_dockerApp.git'
-            }
-        }
+        
         
         stage('build docker image'){
             steps{
